@@ -16,12 +16,12 @@
             @csrf
 
             <div>
-                <x-jet-label value="Username" />
+                <x-jet-label value="Nama Pengguna" />
                 <x-jet-input class="block mt-1 w-full" type="text" name="username" :value="old('username')" required autofocus />
             </div>
 
             <div class="mt-4">
-                <x-jet-label value="Password" />
+                <x-jet-label value="Kata Sandi" />
                 <x-jet-input class="block mt-1 w-full" type="password" name="password" required autocomplete="current-password" />
             </div>
 
