@@ -1,4 +1,17 @@
 <div class="px-12 py-12">
+    <!-- Alert -->
+    @if (session()->has('message'))
+    <div class="text-center -mt-3 mb-8 p-2">
+        <div class="inline-flex items-center bg-white leading-none text-green-600 rounded-full p-2 shadow text-sm">
+            <span class="inline-flex bg-green-600 text-white rounded-full h-6 px-3 justify-center items-center text-">Sukses</span>
+            <span class="inline-flex px-2">{{ session('message') }}</span>
+            <span class="hover:text-red-600">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" wire:click="$refresh" class="fill-current"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            </span>
+        </div>
+    </div>
+    @endif
+
     <div class="bg-white mx-auto pb-4 px-4 rounded-md w-full shadow-xl">
         <div class="flex justify-between w-full pt-6 ">
             <p class="ml-3">Stok Barang</p>
@@ -25,7 +38,7 @@
         </div>
         <div class="w-full flex justify-between px-2 mt-2">
             <div class="flex-auto">
-                <div class="inline-block">Per page:&nbsp;</div>
+                <div class="inline-block">Per halaman:&nbsp;</div>
                 <div class="inline-block">
                     <select wire:model="perPage" class="leading-snug border border-gray-300 block w-full appearance-none bg-gray-100 text-sm text-gray-600 py-1 px-2 rounded-lg text-center align-middle">
                         <option>5</option>
@@ -35,7 +48,7 @@
                 </div>
             </div>
             <div class="inline-block relative">
-                <input wire:model="search" type="text" name="" class="leading-snug border border-gray-300 block w-full appearance-none bg-gray-100 text-sm text-gray-600 py-1 px-4 pl-8 rounded-lg" placeholder="Search" />
+                <input wire:model="search" type="text" name="" class="leading-snug border border-gray-300 block w-full appearance-none bg-gray-100 text-sm text-gray-600 py-1 px-4 pl-8 rounded-lg" placeholder="Cari" />
                 <div class="pointer-events-none absolute pl-3 inset-y-0 left-0 flex items-center px-2 text-gray-300">
                     <svg class="fill-current h-3 w-3" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 511.999 511.999">
                         <path d="M508.874 478.708L360.142 329.976c28.21-34.827 45.191-79.103 45.191-127.309C405.333 90.917 314.416 0 202.666 0S0 90.917 0 202.667s90.917 202.667 202.667 202.667c48.206 0 92.482-16.982 127.309-45.191l148.732 148.732c4.167 4.165 10.919 4.165 15.086 0l15.081-15.082c4.165-4.166 4.165-10.92-.001-15.085zM202.667 362.667c-88.229 0-160-71.771-160-160s71.771-160 160-160 160 71.771 160 160-71.771 160-160 160z" />
@@ -81,17 +94,68 @@
             </x-slot>
 
             <x-slot name="content">
-                <div class="grid gap-6">
-                    <div class="col-span-6 sm:col-span-4">
+                <div class="grid grid-cols-1 gap-6">
+                    <div>
                         <x-jet-label for="barcode" value="Barcode" />
                         <x-jet-input id="barcode" type="text" class="mt-1 block w-full" wire:model="item.barcode" />
                         <x-jet-input-error for="item.barcode" class="mt-2" />
                     </div>
 
-                    <div class="col-span-6 sm:col-span-4">
+                    <div>
                         <x-jet-label for="name" value="Nama" />
                         <x-jet-input id="name" type="text" class="mt-1 block w-full" wire:model="item.name" />
                         <x-jet-input-error for="item.name" class="mt-2" />
+                    </div>
+
+                    <div class="overflow-y-auto h-56">
+                        <div class="flex">
+                            <div class="flex-1 grid grid-cols-3">
+                                <div>
+                                    <x-jet-label for="prices.0.name" value="Satuan (Biji, Lusin, Gram, dll)" />
+                                    <input  id="prices.0.name" type="text" class="mt-1 block w-full form-input shadow-sm rounded-l-md rounded-r-none" wire:model="prices.0.name">
+                                    <x-jet-input-error for="prices.0.name" class="mt-2" />
+                                </div>
+                                <div>
+                                    <x-jet-label for="prices.0.price" value="Harga (Rp)" />
+                                    <input  id="prices.0.price" type="number" class="mt-1 block w-full form-input shadow-sm rounded-none" wire:model="prices.0.price">
+                                    <x-jet-input-error for="prices.0.price" class="mt-2" />
+                                </div>
+                                <div>
+                                    <x-jet-label for="prices.0.stock" value="Stok" />
+                                    <input  id="prices.0.stock" type="number" class="mt-1 block w-full form-input shadow-sm rounded-none" wire:model="prices.0.stock">
+                                    <x-jet-input-error for="prices.0.stock" class="mt-2" />
+                                </div>
+                            </div>
+                            <div class="inline-flex">
+                                <button class="text-gray-800 font-bold py-2 px-4 inline-flex items-center shadow-sm form-input rounded-l-none rounded-r-md" style="margin-top: 1.55rem; height: 2.6rem;" wire:click="addPrice({{ $numPrices }})">
+                                  <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
+                              </button>
+                            </div>
+                        </div>
+
+                        @for($i = 1; $i < $numPrices; $i++)
+                        <div class="flex">
+                            <div class="flex-1 grid grid-cols-3">
+                                <div>
+                                    <input  id="prices.{{ $i }}.name" type="text" class="mt-1 block w-full form-input shadow-sm rounded-l-md rounded-r-none" wire:model="prices.{{ $i }}.name">
+                                    <x-jet-input-error for="prices.{{ $i }}.name" class="mt-2" />
+                                </div>
+                                <div>
+                                    <input  id="prices.{{ $i }}.price" type="number" class="mt-1 block w-full form-input shadow-sm rounded-none"  wire:model="prices.{{ $i }}.price">
+                                    <x-jet-input-error for="prices.{{ $i }}.price" class="mt-2" />
+                                </div>
+                                <div>
+                                    <input  id="prices.{{ $i }}.stock" type="number" class="mt-1 block w-full form-input shadow-sm rounded-none"  wire:model="prices.{{ $i }}.stock">
+                                    <x-jet-input-error for="prices.{{ $i }}.stock" class="mt-2" />
+                                </div>
+                            </div>
+                            <div class="inline-flex">
+                                <button class="text-gray-800 font-bold py-2 px-4 inline-flex items-center shadow-sm form-input rounded-l-none rounded-r-md mt-1" style="height: 2.63rem;" wire:click="removePrice({{ $i }})">
+                                  <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"></path></svg>
+                              </button>
+                            </div>
+                        </div>
+                        @endfor
                     </div>
                 </div>
             </x-slot>
@@ -101,7 +165,7 @@
                     Batalkan
                 </x-jet-secondary-button>
 
-                <x-jet-button class="ml-2" wire:click="$toggle('modalState')" wire:click.prevent="addUser" wire:loading.attr="disabled">
+                <x-jet-button class="ml-2" wire:click.prevent="addUser" wire:loading.attr="disabled">
                     Tambah
                 </x-jet-button>
             </x-slot>

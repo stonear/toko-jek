@@ -209,14 +209,6 @@
                 </div>
             </nav>
 
-            <!-- Alert -->
-            <div class="text-center mt-4 -mb-8 p-2">
-                <div class="inline-flex items-center bg-white leading-none text-green-600 rounded-full p-2 shadow text-sm">
-                    <span class="inline-flex bg-green-600 text-white rounded-full h-6 px-3 justify-center items-center text-">Green</span>
-                    <span class="inline-flex px-2">Aliquam condimentum, odio ac finibus fermentum neque risus.</span>
-                </div>
-            </div>
-
             <!-- Page Content -->
             <main>
                 {{ $slot }}
