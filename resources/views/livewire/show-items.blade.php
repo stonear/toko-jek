@@ -29,7 +29,7 @@
                         </button>
                     </x-slot>
                     <x-slot name="content">
-                        <x-jet-dropdown-link href="#" wire:click="$toggle('modalState')">
+                        <x-jet-dropdown-link href="#" wire:click="$toggle('CmodalState')">
                             Tambah Barang
                         </x-jet-dropdown-link>
                     </x-slot>
@@ -74,7 +74,7 @@
                 </thead>
                 <tbody class="text-sm font-normal text-gray-700">
                      @foreach ($items as $i)
-                        <tr class="hover:bg-gray-100 border-b border-gray-200 py-10">
+                        <tr class="hover:bg-gray-100 border-b border-gray-200 py-10" wire:click="readItem({{ $i->id }})">
                             <td class="px-4 py-4">{{ $i->barcode }}</td>
                             <td class="px-4 py-4">{{ $i->name }}</td>
                         </tr>
@@ -87,7 +87,7 @@
         </div>
     </div>
 
-    <x-jet-dialog-modal wire:model="modalState">
+    <x-jet-dialog-modal wire:model="CmodalState">
         <form>
             <x-slot name="title">
                 Tambah Barang
@@ -128,7 +128,7 @@
                             </div>
                             <div class="inline-flex">
                                 <button class="text-gray-800 font-bold py-2 px-4 inline-flex items-center shadow-sm form-input rounded-l-none rounded-r-md" style="margin-top: 1.55rem; height: 2.6rem;" wire:click="addPrice({{ $numPrices }})">
-                                  <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
                               </button>
                             </div>
                         </div>
@@ -137,21 +137,21 @@
                         <div class="flex">
                             <div class="flex-1 grid grid-cols-3">
                                 <div>
-                                    <input  id="prices.{{ $i }}.name" type="text" class="mt-1 block w-full form-input shadow-sm rounded-l-md rounded-r-none" wire:model="prices.{{ $i }}.name">
+                                    <input  id="prices.{{ $i }}.name" type="text" class="mt-1 block w-full form-input shadow-sm rounded-l-md rounded-r-none" wire:model="prices.{{ $i }}.name" >
                                     <x-jet-input-error for="prices.{{ $i }}.name" class="mt-2" />
                                 </div>
                                 <div>
-                                    <input  id="prices.{{ $i }}.price" type="number" class="mt-1 block w-full form-input shadow-sm rounded-none"  wire:model="prices.{{ $i }}.price">
+                                    <input  id="prices.{{ $i }}.price" type="number" class="mt-1 block w-full form-input shadow-sm rounded-none" wire:model="prices.{{ $i }}.price" >
                                     <x-jet-input-error for="prices.{{ $i }}.price" class="mt-2" />
                                 </div>
                                 <div>
-                                    <input  id="prices.{{ $i }}.stock" type="number" class="mt-1 block w-full form-input shadow-sm rounded-none"  wire:model="prices.{{ $i }}.stock">
+                                    <input  id="prices.{{ $i }}.stock" type="number" class="mt-1 block w-full form-input shadow-sm rounded-none" wire:model="prices.{{ $i }}.stock" >
                                     <x-jet-input-error for="prices.{{ $i }}.stock" class="mt-2" />
                                 </div>
                             </div>
                             <div class="inline-flex">
                                 <button class="text-gray-800 font-bold py-2 px-4 inline-flex items-center shadow-sm form-input rounded-l-none rounded-r-md mt-1" style="height: 2.63rem;" wire:click="removePrice({{ $i }})">
-                                  <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"></path></svg>
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"></path></svg>
                               </button>
                             </div>
                         </div>
@@ -161,15 +161,110 @@
             </x-slot>
 
             <x-slot name="footer">
-                <x-jet-secondary-button wire:click="$toggle('modalState')" wire:loading.attr="disabled">
+                <x-jet-secondary-button wire:click="$toggle('CmodalState')" wire:loading.attr="disabled">
                     Batalkan
                 </x-jet-secondary-button>
 
-                <x-jet-button class="ml-2" wire:click.prevent="addUser" wire:loading.attr="disabled">
+                <x-jet-button class="ml-2" wire:click.prevent="addItem" wire:loading.attr="disabled">
                     Tambah
                 </x-jet-button>
             </x-slot>
         </form>
+    </x-jet-dialog-modal>
+
+    <x-jet-dialog-modal wire:model="RmodalState">
+        <x-slot name="title">
+            {{ $RmodalData->name ?? '' }}
+        </x-slot>
+
+        <x-slot name="content">
+            @if($RmodalData)
+            <div class="grid grid-cols-1 gap-6">
+                <div>
+                    <x-jet-label for="barcode" value="Barcode" />
+                    <x-jet-input id="barcode" type="text" class="mt-1 block w-full" wire:model="RmodalData.barcode" />
+                    <x-jet-input-error for="item.barcode" class="mt-2" />
+                </div>
+
+                <div>
+                    <x-jet-label for="name" value="Nama" />
+                    <x-jet-input id="name" type="text" class="mt-1 block w-full" wire:model="RmodalData.name" />
+                    <x-jet-input-error for="item.name" class="mt-2" />
+                </div>
+
+                <div class="overflow-y-auto h-56">
+                    @for($i = 0; $i < count($RmodalData['prices']); $i++)
+                    @if($i == 0)
+                    <div class="flex">
+                        <div class="flex-1 grid grid-cols-3">
+                            <div>
+                                <x-jet-label for="prices.0.name" value="Satuan (Biji, Lusin, Gram, dll)" />
+                                <input  id="prices.0.name" type="text" class="mt-1 block w-full form-input shadow-sm rounded-l-md rounded-r-none" wire:model="RmodalData.prices.0.name" >
+                                <x-jet-input-error for="prices.0.name" class="mt-2" />
+                            </div>
+                            <div>
+                                <x-jet-label for="prices.0.price" value="Harga (Rp)" />
+                                <input  id="prices.0.price" type="number" class="mt-1 block w-full form-input shadow-sm rounded-none" wire:model="RmodalData.prices.0.price" >
+                                <x-jet-input-error for="prices.0.price" class="mt-2" />
+                            </div>
+                            <div>
+                                <x-jet-label for="prices.0.stock" value="Stok" />
+                                <input  id="prices.0.stock" type="number" class="mt-1 block w-full form-input shadow-sm rounded-none" wire:model="RmodalData.prices.0.stock" >
+                                <x-jet-input-error for="prices.0.stock" class="mt-2" />
+                            </div>
+                        </div>
+                        <div class="inline-flex">
+                            <button class="text-gray-800 font-bold py-2 px-4 inline-flex items-center shadow-sm form-input rounded-l-none rounded-r-md" style="margin-top: 1.55rem; height: 2.6rem;" wire:click="addPrice({{ $numPrices }})">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+                    @else
+                    <div class="flex">
+                        <div class="flex-1 grid grid-cols-3">
+                            <div>
+                                <input  id="prices.{{ $i }}.name" type="text" class="mt-1 block w-full form-input shadow-sm rounded-l-md rounded-r-none" wire:model="RmodalData.prices.{{ $i }}.name" >
+                                <x-jet-input-error for="prices.{{ $i }}.name" class="mt-2" />
+                            </div>
+                            <div>
+                                <input  id="prices.{{ $i }}.price" type="number" class="mt-1 block w-full form-input shadow-sm rounded-none" wire:model="RmodalData.prices.{{ $i }}.price" >
+                                <x-jet-input-error for="prices.{{ $i }}.price" class="mt-2" />
+                            </div>
+                            <div>
+                                <input  id="prices.{{ $i }}.stock" type="number" class="mt-1 block w-full form-input shadow-sm rounded-none" wire:model="RmodalData.prices.{{ $i }}.stock" >
+                                <x-jet-input-error for="prices.{{ $i }}.stock" class="mt-2" />
+                            </div>
+                        </div>
+                        <div class="inline-flex">
+                            <button class="text-gray-800 font-bold py-2 px-4 inline-flex items-center shadow-sm form-input rounded-l-none rounded-r-md mt-1" style="height: 2.63rem;" wire:click="removePrice({{ $i }})">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+                    @endif
+                    @endfor
+                </div>
+            </div>
+            @endif
+        </x-slot>
+
+        <x-slot name="footer">
+            <div class="flex justify-between">
+                <x-jet-danger-button wire:click.prevent="deleteItem({{ $RmodalData->id ?? 0 }})" wire:loading.attr="disabled">
+                    Hapus
+                </x-jet-danger-button>
+
+                <div>
+                    <x-jet-secondary-button wire:click="$toggle('RmodalState')" wire:loading.attr="disabled">
+                        Batalkan
+                    </x-jet-secondary-button>
+
+                    <x-jet-button class="ml-2" wire:click.prevent="updateItem({{ $RmodalData->id ?? 0 }})" wire:loading.attr="disabled">
+                        Perbarui
+                    </x-jet-button>
+                </div>
+            </div>
+        </x-slot>
     </x-jet-dialog-modal>
 
     <style>

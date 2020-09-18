@@ -16,9 +16,11 @@ class ShowItems extends Component
     public $sortAsc = true;
     public $search = '';
 
-    public $modalState = false;
+    public $CmodalState = false;
+    public $RmodalState = false;
+    public $RmodalData;
 
-    public Item $item;
+    public $item;
 
     public $numPrices = 1;
     public $prices = [];
@@ -43,7 +45,7 @@ class ShowItems extends Component
         $this->sortField = $field;
     }
 
-    public function addUser()
+    public function addItem()
     {
         $this->validate($this->rules);
 
@@ -59,8 +61,24 @@ class ShowItems extends Component
 
         $this->numPrices = 1;
         $this->prices = [];
-        $this->modalState = false;
+        $this->CmodalState = false;
         session()->flash('message', 'Berhasil menambah barang.');
+    }
+
+    public function readItem($id = 0)
+    {
+        $this->RmodalData = Item::with('prices')->firstWhere('id', $id)->toArray();
+        if ( $this->RmodalData) $this->RmodalState = true;
+    }
+
+    public function updateItem($id = 0)
+    {
+        $this->RmodalState = false;
+    }
+
+    public function deleteItem($id = 0)
+    {
+        $this->RmodalState = false;
     }
 
     public function addPrice()
