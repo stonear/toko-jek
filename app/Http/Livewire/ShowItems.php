@@ -22,16 +22,40 @@ class ShowItems extends Component
 
     public $item;
 
-    public $numPrices = 1;
+    public $CnumPrices = 1;
+    public $RnumPrices = 1;
     public $prices = [];
 
-    public $rules = [
+    protected $rules = [
         'item.barcode' => 'required|string',
         'item.name' => 'required|string',
 
         'prices.0.name' => 'required|string',
         'prices.0.price' => 'required|integer',
         'prices.0.stock' => 'required|integer',
+
+        'RmodalData.barcode' => 'required|string',
+        'RmodalData.name' => 'required|string',
+
+        'RmodalData.prices.0.name' => 'required|string',
+        'RmodalData.prices.0.price' => 'required|integer',
+        'RmodalData.prices.0.stock' => 'required|integer',
+    ];
+    public $Crules = [
+        'item.barcode' => 'required|string',
+        'item.name' => 'required|string',
+
+        'prices.0.name' => 'required|string',
+        'prices.0.price' => 'required|integer',
+        'prices.0.stock' => 'required|integer',
+    ];
+    public $Rrules = [
+        'RmodalData.barcode' => 'required|string',
+        'RmodalData.name' => 'required|string',
+
+        'RmodalData.prices.0.name' => 'required|string',
+        'RmodalData.prices.0.price' => 'required|integer',
+        'RmodalData.prices.0.stock' => 'required|integer',
     ];
 
     public function sortBy($field)
@@ -47,7 +71,7 @@ class ShowItems extends Component
 
     public function addItem()
     {
-        $this->validate($this->rules);
+        $this->validate($this->Crules);
 
         $this->item->save();
         foreach ($this->prices as $price) {
@@ -59,7 +83,7 @@ class ShowItems extends Component
             $p->save();
         }
 
-        $this->numPrices = 1;
+        $this->CnumPrices = 1;
         $this->prices = [];
         $this->CmodalState = false;
         session()->flash('message', 'Berhasil menambah barang.');
@@ -68,34 +92,91 @@ class ShowItems extends Component
     public function readItem($id = 0)
     {
         $this->RmodalData = Item::with('prices')->firstWhere('id', $id)->toArray();
-        if ( $this->RmodalData) $this->RmodalState = true;
+        $this->RnumPrices = count($this->RmodalData['prices']);
+        foreach ( $this->Rrules as $key => $value) {
+            if (strpos($key, 'RmodalData.prices.') === 0) {
+                unset($this->Rrules[$key]);
+            }
+        }
+        for($i = 0; $i < $this->RnumPrices; $i++) {
+            $this->Rrules['RmodalData.prices.' . $i . '.name'] = 'required|string';
+            $this->Rrules['RmodalData.prices.' . $i . '.price'] = 'required|integer';
+            $this->Rrules['RmodalData.prices.' . $i . '.stock'] = 'required|integer';
+        }
+        if ($this->RmodalData) $this->RmodalState = true;
     }
 
     public function updateItem($id = 0)
     {
+        $this->validate($this->Rrules);
+
+        Item::where('id', $id)->update([
+            'barcode' => $this->RmodalData['barcode'],
+            'name' => $this->RmodalData['name']
+        ]);
+        $usedPriceId = [];
+        foreach ($this->RmodalData['prices'] as $price) {
+            if (array_key_exists("id", $price)) {
+                Price::where('id', $price['id'])->update([
+                    'name' => $price['name'],
+                    'price' => $price['price'],
+                    'stock' => $price['stock']
+                ]);
+                $usedPriceId[] = $price['id'];
+            } else {
+                $p = new Price;
+                $p->name = $price['name'];
+                $p->price = $price['price'];
+                $p->stock = $price['stock'];
+                $p->item_id = $id;
+                $p->save();
+                $usedPriceId[] = $p->id;
+            }
+        }
+        Price::where('item_id', $id)->whereNotIn('id', $usedPriceId)->delete();
+
         $this->RmodalState = false;
+        session()->flash('message', 'Berhasil memperbarui barang.');
     }
 
     public function deleteItem($id = 0)
     {
+        $deletedRows = Item::where('id', $id)->delete();
+        $deletedRows = Price::where('item_id', $id)->delete();
         $this->RmodalState = false;
+        session()->flash('message', 'Berhasil menghapus barang.');
     }
 
-    public function addPrice()
+    public function addPrice($action = '')
     {
-        $this->rules['prices.' . $this->numPrices . '.name'] = 'required|string';
-        $this->rules['prices.' . $this->numPrices . '.price'] = 'required|integer';
-        $this->rules['prices.' . $this->numPrices . '.stock'] = 'required|integer';
-        $this->numPrices++;
+        if ($action == 'C') {
+            $this->Crules['prices.' . $this->CnumPrices . '.name'] = 'required|string';
+            $this->Crules['prices.' . $this->CnumPrices . '.price'] = 'required|integer';
+            $this->Crules['prices.' . $this->CnumPrices . '.stock'] = 'required|integer';
+            $this->CnumPrices++;
+        } elseif ($action == 'R') {
+            $this->Rrules['RmodalData.prices.' . $this->RnumPrices . '.name'] = 'required|string';
+            $this->Rrules['RmodalData.prices.' . $this->RnumPrices . '.price'] = 'required|integer';
+            $this->Rrules['RmodalData.prices.' . $this->RnumPrices . '.stock'] = 'required|integer';
+            $this->RnumPrices++;
+        }
     }
 
-    public function removePrice($num = 0)
+    public function removePrice($action = '', $num = 0)
     {
-        array_splice($this->prices, $num, 1);
-        $this->numPrices--;
-        unset($this->rules['prices.' . $this->numPrices . '.name']);
-        unset($this->rules['prices.' . $this->numPrices . '.price']);
-        unset($this->rules['prices.' . $this->numPrices . '.stock']);
+        if ($action == 'C') {
+            array_splice($this->prices, $num, 1);
+            $this->CnumPrices--;
+            unset($this->Crules['prices.' . $this->CnumPrices . '.name']);
+            unset($this->Crules['prices.' . $this->CnumPrices . '.price']);
+            unset($this->Crules['prices.' . $this->CnumPrices . '.stock']);
+         } elseif ($action == 'R') {
+            array_splice($this->RmodalData['prices'], $num, 1);
+            $this->RnumPrices--;
+            unset($this->Rrules['RmodalData.prices.' . $this->RnumPrices . '.name']);
+            unset($this->Rrules['RmodalData.prices.' . $this->RnumPrices . '.price']);
+            unset($this->Rrules['RmodalData.prices.' . $this->RnumPrices . '.stock']);
+        }
     }
 
     public function mount()
