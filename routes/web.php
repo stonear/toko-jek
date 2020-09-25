@@ -14,13 +14,10 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-	return redirect('login');
+    return redirect('login');
 });
 
 Route::middleware(['auth:sanctum', 'verified'])->group(function () {
-    Route::get('dashboard', function () {
-        return view('dashboard');
-    })->name('dashboard');
-
-    Route::get('items' , App\Http\Livewire\ShowItems::class)->name('items');
+    Route::get('dashboard', App\Http\Livewire\Cart::class)->name('dashboard');
+    Route::get('items', App\Http\Livewire\ShowItems::class)->name('items');
 });

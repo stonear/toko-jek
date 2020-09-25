@@ -13,8 +13,8 @@
     @endif
 
     <div class="bg-white mx-auto pb-4 px-4 rounded-md w-full shadow-xl">
-        <div class="flex justify-between w-full pt-6 ">
-            <p class="ml-3">Stok Barang</p>
+        <div class="flex justify-between w-full pt-6">
+            <p class="ml-3 font-black text-xl">Stok Barang</p>
             <div class="hidden sm:flex sm:items-center sm:ml-6">
                 <x-jet-dropdown align="right" width="48">
                     <x-slot name="trigger">
@@ -73,7 +73,7 @@
                     </tr>
                 </thead>
                 <tbody class="text-sm font-normal text-gray-700">
-                     @foreach ($items as $i)
+                    @foreach ($items as $i)
                         <tr class="hover:bg-gray-100 border-b border-gray-200 py-10" wire:click="readItem({{ $i->id }})">
                             <td class="px-4 py-4">{{ $i->barcode }}</td>
                             <td class="px-4 py-4">{{ $i->name }}</td>
