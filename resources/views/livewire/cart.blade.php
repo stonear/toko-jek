@@ -84,8 +84,27 @@
                         <tr>
                             <th colspan="4" class="py-2 text-gray-700 text-right">@rupiah($total)</th>
                         </tr>
+                        <tr>
+                            <th class="py-2 text-gray-700 text-left">Uang Bayar</th>
+                            <th colspan="3"><x-jet-input id="cart.pay" type="number" class="mt-1 block w-full" wire:model="cart.pay" /></th>
+                        </tr>
+                        <tr>
+                            <th class="py-2 text-gray-700 text-left">Uang Kembali</th>
+                            <th colspan="3" class="py-2 text-gray-700 text-right">
+                                @if(array_key_exists('pay', $cart)) @rupiah($cart['pay'] - $total) @endif
+                            </th>
+                        </tr>
                     </tfoot>
                 </table>
+                <div class="w-full flex justify-between border-t border-gray-100 pt-4">
+                    <x-jet-secondary-button wire:click="emptyItem" wire:loading.attr="disabled">
+                        Kosongkan Keranjang
+                    </x-jet-secondary-button>
+
+                    <x-jet-button class="ml-2" wire:click="submit" wire:loading.attr="disabled">
+                        Simpan Transaksi
+                    </x-jet-button>
+                </div>
                 @else
                 <div class="w-full text-center text-orange-500 pt-20">
                     <svg class="w-full text-center w-24 h-24 pb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>

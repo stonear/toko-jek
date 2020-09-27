@@ -72,12 +72,26 @@ class Cart extends Component
         }
     }
 
+    public function emptyItem()
+    {
+        $this->cart = [
+            'total' => 0,
+            'items' => []
+        ];
+    }
+
     public function readItem($id = 0)
     {
         $this->RmodalData = Item::with('prices')->firstWhere('id', $id)->toArray();
         $this->RmodalData['priceId'] = $this->RmodalData['prices'][0]['id'] ?? NULL;
         $this->RmodalData['amount'] = NULL;
         if ($this->RmodalData) $this->RmodalState = true;
+    }
+
+    public function submit()
+    {
+        $this->emptyItem();
+        session()->flash('message', 'Berhasil menyimpan transaksi.');
     }
 
     public function mount()
