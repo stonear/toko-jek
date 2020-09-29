@@ -43,6 +43,11 @@
                                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"></path></svg>&nbsp;Stok Barang
                                 </x-jet-nav-link>
                             </div>
+                            <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
+                                <x-jet-nav-link href="/histories" :active="request()->routeIs('histories')">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>&nbsp;Histori Transaksi
+                                </x-jet-nav-link>
+                            </div>
                         </div>
 
                         <!-- Settings Dropdown -->
@@ -137,6 +142,9 @@
                         </x-jet-responsive-nav-link>
                         <x-jet-responsive-nav-link href="/items" :active="request()->routeIs('items')">
                             Stok Barang
+                        </x-jet-responsive-nav-link>
+                        <x-jet-responsive-nav-link href="/histories" :active="request()->routeIs('histories')">
+                            Histori Transaksi
                         </x-jet-responsive-nav-link>
                     </div>
 
