@@ -87,6 +87,8 @@ class ShowItems extends Component
         $this->prices = [];
         $this->CmodalState = false;
         session()->flash('message', 'Berhasil menambah barang.');
+
+        return redirect()->to('items');
     }
 
     public function readItem($id = 0)
